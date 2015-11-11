@@ -7,7 +7,21 @@ defmodule Floorplan.Mixfile do
      elixir: "~> 1.1",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     description: description,
+     package: package,
      deps: deps]
+  end
+
+  def description do
+    "A module for generating sitemaps from a variety of data sources"
+  end
+
+  def package do
+    [
+      maintainers: ["Lucas Charles"],
+      licenses: ["BSD Revised"],
+      links: %{"GitHub" => "https://github.com/househappy/floorplan"}
+    ]
   end
 
   # Configuration for the OTP application

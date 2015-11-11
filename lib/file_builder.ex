@@ -7,7 +7,7 @@ defmodule Floorplan.FileBuilder do
   alias Floorplan.FileList
   alias Floorplan.Utilities
 
-  @base_url "https://www.househappy.org"
+  @base_url Application.get_env(:floorplan, :base_url)
   def base_url, do: @base_url
 
   def build(url_links, is_last \\ false) do

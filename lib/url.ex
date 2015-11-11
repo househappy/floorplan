@@ -1,4 +1,4 @@
-defmodule Floorplan.UrlLink do
+defmodule Floorplan.Url do
   defstruct location: nil,
             last_mod: Floorplan.Utilities.current_time,
             change_freq: "daily",

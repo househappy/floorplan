@@ -13,7 +13,7 @@ defmodule Floorplan.FileBuilderTest do
     </url>
     """
 
-    url_link = %UrlLink{
+    url_link = %Floorplan.Url{
       location: "",
       last_mod: "2004-12-23T18:00:15+00:00",
       change_freq: "monthly",

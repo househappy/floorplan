@@ -10,6 +10,9 @@ defmodule Floorplan.IndexBuilder do
   alias Floorplan.FileList
   alias Floorplan.Utilities
 
+  @base_url Application.get_env(:floorplan, :base_url)
+  def base_url, do: @base_url
+
   def generate(filename) do
     completed_urlsets = FileList.fetch(:completed)
 
@@ -30,7 +33,7 @@ defmodule Floorplan.IndexBuilder do
 
       Enum.map(urlsets, fn {filename, _status} ->
         basename = Path.basename(filename)
-        IO.binwrite file, build_url_entry("https://www.househappy.org/" <> basename)
+        IO.binwrite file, build_url_entry("/" <> basename)
         IO.binwrite file, "\n"
       end)
 
@@ -40,7 +43,7 @@ defmodule Floorplan.IndexBuilder do
 
   def build_url_entry(location) do
     last_mod = Utilities.current_time |> String.split("T") |> List.first
-    node = [{:loc,       nil, location},
+    node = [{:loc,       nil, base_url <> location},
             {:lastmod,   nil, last_mod}]
     XmlBuilder.generate({:sitemap, nil, node})
   end

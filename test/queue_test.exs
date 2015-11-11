@@ -15,7 +15,7 @@ defmodule Floorplan.QueueTest do
   end
 
   test "push() appends to queue" do
-    url_link = %Floorplan.UrlLink{}
+    url_link = %Floorplan.Url{}
 
     # queue is initially empty
     queue = Queue.fetch
@@ -31,7 +31,7 @@ defmodule Floorplan.QueueTest do
 
   test "push() triggers call to FileBuilder if queue over 49_900" do
     maxed_out_queue = Enum.to_list(1..49_900)
-    Queue.handle_cast({:push, %Floorplan.UrlLink{}, self}, maxed_out_queue)
+    Queue.handle_cast({:push, %Floorplan.Url{}, self}, maxed_out_queue)
     assert_receive {:build_file_start, _task}, 1000
   end
 
@@ -39,7 +39,7 @@ defmodule Floorplan.QueueTest do
     Agent.start_link(fn -> "tmp/test_sitemap.xml" end, name: :index_filename)
 
     # populate queue
-    Queue.push(%Floorplan.UrlLink{})
+    Queue.push(%Floorplan.Url{})
     queue = Queue.fetch
     assert Dict.size(queue) > 0
 

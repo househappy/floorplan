@@ -16,8 +16,8 @@ defmodule FloorplanTest do
     assert Dict.size(files) == 0
 
     data_sources = [
-      %Floorplan.UrlLink{location: "/foo"},
-      %Floorplan.UrlLink{location: "/bar"}
+      %Floorplan.Url{location: "/foo"},
+      %Floorplan.Url{location: "/bar"}
     ]
 
     Floorplan.generate("tmp/test_sitemap.xml", data_sources)
