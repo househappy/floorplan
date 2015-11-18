@@ -52,7 +52,8 @@ defmodule Floorplan.FileBuilder do
   end
 
   def build_node(url_link) do
-    node = [{:loc,       nil, "#{base_url}#{url_link.location}"},
+    loc = base_url <> url_link.location
+    node = [{:loc,       nil, loc},
             {:lastmod,   nil, url_link.last_mod},
             {:changefreq, nil, url_link.change_freq},
             {:priority,  nil, url_link.priority}]

@@ -4,7 +4,7 @@ defmodule Floorplan.App do
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
+    import Supervisor.Spec
 
     children = [
       worker(Floorplan.Queue, [[name: Floorplan.Queue]]),
@@ -15,6 +15,6 @@ defmodule Floorplan.App do
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
-    {:ok, _pid} = Supervisor.start_link(children, strategy: :one_for_one)
+    Supervisor.start_link(children, strategy: :one_for_one)
   end
 end

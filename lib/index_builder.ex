@@ -43,7 +43,8 @@ defmodule Floorplan.IndexBuilder do
 
   def build_url_entry(location) do
     last_mod = Utilities.current_time |> String.split("T") |> List.first
-    node = [{:loc,       nil, base_url <> location},
+    loc = base_url <> location
+    node = [{:loc,       nil, loc},
             {:lastmod,   nil, last_mod}]
     XmlBuilder.generate({:sitemap, nil, node})
   end
