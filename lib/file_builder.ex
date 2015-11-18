@@ -19,7 +19,7 @@ defmodule Floorplan.FileBuilder do
       {:ok, :ok} ->
         {:ok, compressed_filename} = Utilities.compress(filename)
         FileList.push({compressed_filename, :completed})
-      {:error, _err} ->
+      true ->
         FileList.push({filename, :failed})
     end
 
@@ -49,7 +49,7 @@ defmodule Floorplan.FileBuilder do
   end
 
   def build_node(url_link) do
-    loc = Floorplan.config.base_url <> url_link.location
+    loc = Floorplan.config.base_url <> to_string(url_link.location)
     node = [{:loc,       nil, loc},
             {:lastmod,   nil, url_link.last_mod},
             {:changefreq, nil, url_link.change_freq},
