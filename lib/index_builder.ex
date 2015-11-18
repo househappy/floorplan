@@ -10,9 +10,6 @@ defmodule Floorplan.IndexBuilder do
   alias Floorplan.FileList
   alias Floorplan.Utilities
 
-  @base_url Application.get_env(:floorplan, :base_url)
-  def base_url, do: @base_url
-
   def generate(filename) do
     completed_urlsets = FileList.fetch(:completed)
 
@@ -43,7 +40,7 @@ defmodule Floorplan.IndexBuilder do
 
   def build_url_entry(location) do
     last_mod = Utilities.current_time |> String.split("T") |> List.first
-    loc = base_url <> location
+    loc = Floorplan.config.base_url <> location
     node = [{:loc,       nil, loc},
             {:lastmod,   nil, last_mod}]
     XmlBuilder.generate({:sitemap, nil, node})

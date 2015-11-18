@@ -7,9 +7,6 @@ defmodule Floorplan.FileBuilder do
   alias Floorplan.FileList
   alias Floorplan.Utilities
 
-  @base_url Application.get_env(:floorplan, :base_url)
-  def base_url, do: @base_url
-
   def build(url_links, is_last \\ false) do
     count = FileCounter.increment
     filename = if Mix.env == :test do
@@ -52,7 +49,7 @@ defmodule Floorplan.FileBuilder do
   end
 
   def build_node(url_link) do
-    loc = base_url <> url_link.location
+    loc = Floorplan.config.base_url <> url_link.location
     node = [{:loc,       nil, loc},
             {:lastmod,   nil, url_link.last_mod},
             {:changefreq, nil, url_link.change_freq},

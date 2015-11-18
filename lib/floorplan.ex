@@ -6,6 +6,11 @@ defmodule Floorplan do
   alias Floorplan.FileList
   alias Floorplan.Queue
 
+  @config %{
+    base_url: Application.get_env(:floorplan, :base_url)
+  }
+  def config, do: @config
+
   @doc """
   takes the target location for the sitemap index and a collection of
   `link_sources`. `link_sources` can be either a stream or enum.
