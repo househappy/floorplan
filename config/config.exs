@@ -31,3 +31,5 @@ use Mix.Config
 
 # This should be overwritten by including library
 config :floorplan, :base_url, ""
+
+if Mix.env == :test, do: import_config("test.exs")

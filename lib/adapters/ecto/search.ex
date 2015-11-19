@@ -10,7 +10,7 @@ defmodule Floorplan.Adapters.Ecto.Search do
     - @priority
   """
 
-  defmacro __using__(opts) do
+  defmacro __using__(_opts) do
     quote do
       use Ecto.Model
       import Ecto.Query, only: [from: 2]

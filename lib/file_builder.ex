@@ -12,7 +12,7 @@ defmodule Floorplan.FileBuilder do
   def build(url_links, is_last \\ false) do
     file_number = FileCounter.increment
     url_count   = Dict.size(url_links)
-    filename    = if Mix.env == :test do
+    filename    = if Application.get_env(:floorplan, :test) do
       "tmp/test_sitemap#{file_number}.xml"
     else
       "tmp/sitemap#{file_number}.xml"
