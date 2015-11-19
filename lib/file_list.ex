@@ -24,10 +24,10 @@ defmodule Floorplan.FileList do
   @doc """
   Pushes a Path and its state onto queue
 
-  iex> GenServer.cast(FileList, {:push, {"tmp/sitemap1.xml", :completed}})
+  iex> GenServer.cast(FileList, {:push, {"tmp/sitemap1.xml", :completed, 12}})
   """
-  def push(file_with_status) do
-    GenServer.cast(__MODULE__, {:push, file_with_status})
+  def push(file) do
+    GenServer.cast(__MODULE__, {:push, file})
   end
 
   @doc """
@@ -47,8 +47,8 @@ defmodule Floorplan.FileList do
   end
 
   def handle_call({:fetch, status}, _from, queue) do
-    files = Enum.filter(queue, fn(file) ->
-      {_filename, file_status} = file
+    files = Enum.filter(queue, fn(file_state) ->
+      {_filename, file_status, _link_count} = file_state
       status == :all || file_status == status
     end)
     {:reply, files, files}
@@ -57,7 +57,7 @@ defmodule Floorplan.FileList do
     {:reply, :ok, new_queue}
   end
 
-  def handle_cast({:push, file_with_status}, file_list) do
-    {:noreply, [file_with_status|file_list]}
+  def handle_cast({:push, file_state}, file_list) do
+    {:noreply, [file_state|file_list]}
   end
 end

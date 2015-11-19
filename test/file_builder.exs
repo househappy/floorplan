@@ -3,6 +3,11 @@ defmodule Floorplan.FileBuilderTest do
 
   alias Floorplan.FileBuilder
 
+  setup do
+    Logger.remove_backend(:console)
+    :ok
+  end
+
   test "build_node generates XML comforming to sitemap protocol" do
     valid_xml = """
     <url>

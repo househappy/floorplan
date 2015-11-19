@@ -1,3 +1,5 @@
+require Logger
+
 defmodule Floorplan do
   @moduledoc """
   Primary interface for generating a sitemap
@@ -17,21 +19,32 @@ defmodule Floorplan do
 
   ## Examples
     iex>link_source = [ %Floorplan.UrlLink{} ]
-    iex>Floorplan.generate("tmp/sitemap.xml", link_source)
-    {:ok, [{"tmp/sitemap.xml.gz", :completed}, {"tmp/sitemap1.xml.gz", :completed}]}
+    iex>Floorplan.generate("/tmp/sitemap.xml", link_source)
+      Generated sitemap to destination: '/tmp'
+      ✓ tmp/sitemap.xml.gz  -- 1 urls
+      ✓ tmp/sitemap1.xml.gz  -- 1 urls
+      Elapsed time: 10.533 milliseconds
+    {:ok, [{"/tmp/sitemap.xml.gz", :completed}, {"/tmp/sitemap1.xml.gz", :completed}]}
   """
   def generate(index_name, link_sources) do
     Path.dirname(index_name) |> ensure_writeable_destination!
+    Logger.info "Generating sitemap in destination: '#{Path.dirname(Path.absname(index_name))}'"
 
     Agent.start_link(fn -> index_name end, name: :index_filename)
 
-    link_sources
-    |> Stream.map(&Queue.push/1)
-    |> Stream.run
+    {execution_time, :ok} = Timex.Time.measure(fn ->
+      link_sources
+      |> Stream.map(&Queue.push/1)
+      |> Stream.run
 
-    notify_stream_finished
+      notify_stream_finished
+    end)
 
-    {:ok, FileList.fetch(:all)}
+    file_list = FileList.fetch(:all)
+
+    Logger.info "Elapsed time: #{execution_time |> Timex.Format.Time.Formatter.format(:humanized)}"
+
+    {:ok, file_list}
   end
 
   @doc """

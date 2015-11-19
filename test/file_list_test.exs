@@ -3,8 +3,8 @@ defmodule Floorplan.FileListTest do
 
   alias Floorplan.FileList
 
-  def completed_file, do: {"tmp/derp1.xml", :completed}
-  def failed_file,    do: {"tmp/derp2.xml", :failed}
+  def completed_file, do: {"tmp/derp1.xml", :completed, 42}
+  def failed_file,    do: {"tmp/derp2.xml", :failed, 7}
 
   setup do
     FileList.replace_queue([])

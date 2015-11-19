@@ -4,6 +4,7 @@ defmodule Floorplan.QueueTest do
   alias Floorplan.Queue
 
   setup do
+    Logger.remove_backend(:console)
     Queue.replace_queue([])
 
     # TODO: mock something so this isn't necessary

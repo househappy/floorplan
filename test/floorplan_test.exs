@@ -2,6 +2,8 @@ defmodule FloorplanTest do
   use ExUnit.Case
 
   setup do
+    Logger.remove_backend(:console)
+
     Path.wildcard("tmp/test*.xml*") |> Enum.map(&File.rm/1)
 
     on_exit fn ->

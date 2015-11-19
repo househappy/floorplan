@@ -1,3 +1,5 @@
+require Logger
+
 defmodule Floorplan.FileBuilder do
   @docmodule """
   Takes a list of UrlLink structs and writes to file
@@ -8,19 +10,23 @@ defmodule Floorplan.FileBuilder do
   alias Floorplan.Utilities
 
   def build(url_links, is_last \\ false) do
-    count = FileCounter.increment
-    filename = if Mix.env == :test do
-      "tmp/test_sitemap#{count}.xml"
+    file_number = FileCounter.increment
+    url_count   = Dict.size(url_links)
+    filename    = if Mix.env == :test do
+      "tmp/test_sitemap#{file_number}.xml"
     else
-      "tmp/sitemap#{count}.xml"
+      "tmp/sitemap#{file_number}.xml"
     end
 
-    case write_urlset_to_file(filename, url_links) do
+    case write_url_links_to_file(filename, url_links) do
       {:ok, :ok} ->
         {:ok, compressed_filename} = Utilities.compress(filename)
-        FileList.push({compressed_filename, :completed})
-      true ->
-        FileList.push({filename, :failed})
+
+        Logger.info "✓ #{compressed_filename}  -- #{url_count} urls"
+        FileList.push({compressed_filename, :completed, url_count})
+      _ ->
+        Logger.info "✕ #{filename}  -- #{url_count} urls"
+        FileList.push({filename, :failed, url_count})
     end
 
     if is_last do
@@ -35,7 +41,7 @@ defmodule Floorplan.FileBuilder do
     end
   end
 
-  defp write_urlset_to_file(filename, url_links) do
+  defp write_url_links_to_file(filename, url_links) do
     File.open(filename, [:write], fn file ->
       IO.binwrite file, xml_header
 
