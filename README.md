@@ -1,6 +1,8 @@
 # Floorplan
 
-**TODO: Add description**
+Floorplan is a library for generating sitemaps.  It takes a index name and a collection of data sources to produce your site's sitemap.
+
+It currently has built-in adapters for [ecto](https://github.com/elixir-lang/ecto) or [elasticsearch](https://www.elastic.co/) data sources.  See [Examples](https://github.com/househappy/floorplan/tree/master/examples) for usage.
 
 ## Installation
 
