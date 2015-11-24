@@ -20,8 +20,8 @@ defmodule Floorplan.IndexBuilderTest do
     files = Path.wildcard("tmp/test_sitemap.xml.gz")
     assert Dict.size(files) == 0
 
-    FileList.push({"herp1.xml.gz", :completed})
-    FileList.push({"herp2.xml.gz", :completed})
+    FileList.push({"herp1.xml.gz", :completed, 42})
+    FileList.push({"herp2.xml.gz", :completed, 42})
     IndexBuilder.generate("tmp/test_sitemap.xml")
 
     files = Path.wildcard("tmp/test_sitemap.xml.gz")

@@ -17,13 +17,14 @@ defmodule Floorplan.FileBuilder do
     else
       "tmp/sitemap#{file_number}.xml"
     end
+    FileList.push({filename, :in_progress, url_count})
 
     case write_url_links_to_file(filename, url_links) do
       {:ok, :ok} ->
         {:ok, compressed_filename} = Utilities.compress(filename)
 
         Logger.info "✓ #{compressed_filename}  -- #{url_count} urls"
-        FileList.push({compressed_filename, :completed, url_count})
+        FileList.replace(filename, {compressed_filename, :completed, url_count})
       _ ->
         Logger.info "✕ #{filename}  -- #{url_count} urls"
         FileList.push({filename, :failed, url_count})

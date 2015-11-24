@@ -65,7 +65,7 @@ defmodule Floorplan.Queue do
 
   def handle_cast({:push, struct}, queue), do: handle_cast({:push, struct, nil}, queue)
   def handle_cast({:push, struct, reply_pid}, queue) do
-    if Dict.size(queue) >= 49_900 do
+    if Dict.size(queue) >= Floorplan.config.queue_size do
       build_file(queue, reply_pid)
 
       {:noreply, [struct]}

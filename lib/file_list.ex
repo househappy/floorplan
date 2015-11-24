@@ -23,11 +23,16 @@ defmodule Floorplan.FileList do
 
   @doc """
   Pushes a Path and its state onto queue
-
-  iex> GenServer.cast(FileList, {:push, {"tmp/sitemap1.xml", :completed, 12}})
   """
   def push(file) do
     GenServer.cast(__MODULE__, {:push, file})
+  end
+
+  @doc """
+  Swaps a file by filename with a new state
+  """
+  def replace(old_filename, new_state) do
+    GenServer.cast(__MODULE__, {:replace, old_filename, new_state})
   end
 
   @doc """
@@ -38,6 +43,15 @@ defmodule Floorplan.FileList do
   """
   def fetch(status) do
     GenServer.call(__MODULE__, {:fetch, status})
+  end
+
+  @doc """
+  Returns true if no files w/ :in_progress status
+
+  iex> GenServer.cast(FileList, {:fetch, :completed})
+  """
+  def done? do
+    GenServer.call(__MODULE__, :done?)
   end
 
   ## Server callbacks
@@ -53,11 +67,40 @@ defmodule Floorplan.FileList do
     end)
     {:reply, files, files}
   end
+
   def handle_call({:replace_queue, new_queue}, _from, _queue) do
     {:reply, :ok, new_queue}
   end
 
+  @doc """
+  Returns boolean if :in_progress jobs are empty
+
+  iex> GenServer.call(FileList, :done?)
+  """
+  def handle_call(:done?, _from, queue) do
+    none_in_progress? = Enum.all?(queue, fn({_, state, _})->
+      :in_progress != state
+    end)
+    {:reply, none_in_progress?, queue}
+  end
+
+  @doc """
+  Pushes a Path and its state onto queue
+
+  iex> GenServer.cast(FileList, {:push, {"tmp/sitemap1.xml", :completed, 12}})
+  """
   def handle_cast({:push, file_state}, file_list) do
     {:noreply, [file_state|file_list]}
   end
+
+  @doc """
+  Swaps a file by filename with a new state
+
+  iex> GenServer.cast(FileList, {:replace, "tmp/sitemap1.xml", {"tmp/sitemap1.xml.gz", :completed, 12}})
+  """
+  def handle_cast({:replace, old_filename, new_state}, old_files) do
+    file_list = Enum.reject(old_files, fn({filename, _, _}) -> filename == old_filename end)
+    {:noreply, [new_state|file_list]}
+  end
 end
+

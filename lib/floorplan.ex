@@ -9,7 +9,8 @@ defmodule Floorplan do
   alias Floorplan.Queue
 
   @config %{
-    base_url: Application.get_env(:floorplan, :base_url)
+    base_url: Application.get_env(:floorplan, :base_url),
+    queue_size: Application.get_env(:floorplan, :queue_size) || 49_900
   }
   def config, do: @config
 
@@ -18,8 +19,8 @@ defmodule Floorplan do
   `link_sources`. `link_sources` can be either a stream or enum.
 
   ## Examples
-    iex>link_source = [ %Floorplan.UrlLink{} ]
-    iex>Floorplan.generate("/tmp/sitemap.xml", link_source)
+    iex> link_source = [ %Floorplan.UrlLink{} ]
+    ...>Floorplan.generate("/tmp/sitemap.xml", link_source)
       Generated sitemap to destination: '/tmp'
       ✓ tmp/sitemap.xml.gz  -- 1 urls
       ✓ tmp/sitemap1.xml.gz  -- 1 urls
@@ -32,17 +33,19 @@ defmodule Floorplan do
 
     Agent.start_link(fn -> index_name end, name: :index_filename)
 
-    {execution_time, :ok} = Timex.Time.measure(fn ->
-      link_sources
-      |> Stream.map(&Queue.push/1)
-      |> Stream.run
+    start_time = Timex.Time.now
 
-      notify_stream_finished
-    end)
+    link_sources
+    |> Stream.map(&Queue.push/1)
+    |> Stream.run
+
+    notify_stream_finished
+
+    completed?
 
     file_list = FileList.fetch(:all)
-
-    Logger.info "Elapsed time: #{execution_time |> Timex.Format.Time.Formatter.format(:humanized)}"
+    execution_time = Timex.Time.diff(Timex.Time.now, start_time) |> Timex.Format.Time.Formatter.format(:humanized)
+    Logger.info "Elapsed time: #{execution_time}"
 
     {:ok, file_list}
   end
@@ -55,5 +58,9 @@ defmodule Floorplan do
 
   def ensure_writeable_destination!(index_name) do
     File.mkdir_p!(index_name)
+  end
+
+  def completed? do
+    if FileList.done?, do: true, else: completed?
   end
 end

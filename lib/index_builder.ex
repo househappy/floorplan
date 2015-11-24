@@ -15,13 +15,14 @@ defmodule Floorplan.IndexBuilder do
   def generate(filename) do
     completed_urlsets = FileList.fetch(:completed)
     urlset_count      = Dict.size(completed_urlsets)
+    FileList.push({filename, :in_progress, urlset_count})
 
     case write_urlsets_to_file(filename, completed_urlsets) do
       {:ok, :ok} ->
         {:ok, compressed_filename} = Utilities.compress(filename)
 
         Logger.info "✓ #{compressed_filename}  -- #{urlset_count} urls"
-        FileList.push({compressed_filename, :completed, urlset_count})
+        FileList.replace(filename, {compressed_filename, :completed, urlset_count})
       _ ->
         Logger.error "✕ index failed to generate: #{filename} -- #{urlset_count} urls"
         FileList.push({filename, :failed, urlset_count})
