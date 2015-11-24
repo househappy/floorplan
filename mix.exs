@@ -41,9 +41,9 @@ defmodule Floorplan.Mixfile do
      {:ibrowse, github: "cmullaparthi/ibrowse", tag: "v4.1.2"},
      {:poison, "~> 1.5"},
      {:postgrex, ">= 0.0.0"},
-     {:timex, "~> 0.19.2"},
      # see https://github.com/bitwalker/timex/issues/86
-     {:tzdata, "== 0.1.8", override: true},
+     {:tzdata, "== 0.1.8"},
+     {:timex, "~> 1.0.0-rc3"},
      {:xml_builder, "~> 0.0.6"}]
   end
 end
