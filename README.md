@@ -1,4 +1,5 @@
 # Floorplan
+[![Hex.pm Version](http://img.shields.io/hexpm/v/floorplan.svg?style=flat)](https://hex.pm/packages/floorplan)
 
 Floorplan is a library for generating sitemaps.  It takes a index name and a collection of data sources to produce your site's sitemap.
 
@@ -6,7 +7,7 @@ It currently has built-in adapters for [ecto](https://github.com/elixir-lang/ect
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+If [available in Hex](https://hex.pm/packages/floorplan), the package can be installed as:
 
   1. Add floorplan to your list of dependencies in `mix.exs`:
 
