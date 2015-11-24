@@ -11,7 +11,7 @@ defmodule Floorplan.Adapters.Elasticsearch.ScanScrollSearch do
     - @priority
   """
 
-  defmacro __using__(opts) do
+  defmacro __using__(_opts) do
     quote do
 
       @es_host Application.get_env(:floorplan, :elasticsearch)[:host]
