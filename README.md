@@ -19,3 +19,40 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
         def application do
           [applications: [:floorplan]]
         end
+
+  3. Define `base_url` within your applications config:
+
+        ## within config.ex
+        config :floorplan, base_url: "https://www.househappy.org"
+
+  3b. Additional optional configuration:
+
+        ## within config.ex
+        config :floorplan, queue_size: 25_000
+        config :floorplan, :elasticsearch, host: "http://localhost:9200"
+
+## Usage
+
+    defmodule MySitemapGenerator do
+      def generate(index_name) do
+        Floorplan.generate(index_name, data_sources)
+      end
+
+      def data_sources do
+        [
+          CoreLinks.all,
+          ContentLinks.all
+        ] |> Stream.concat
+      end
+    end
+
+    iex> MySitemapGenerator.generate("tmp/sitemap.xml")
+
+See [Examples](https://github.com/househappy/floorplan/tree/master/examples) for more usage.
+
+
+## Contributions
+
+Code is licensed under [BSD License](https://github.com/househappy/floorplan/tree/master/LICENSE.md).
+
+PRs/Issues welcome!
