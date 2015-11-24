@@ -1,17 +1,20 @@
 require Logger
 
 defmodule Floorplan.IndexBuilder do
-  @moduledoc """
+  @moduledoc false
+
+  alias Floorplan.FileList
+  alias Floorplan.Utilities
+
+  @doc """
+  Generate the index given a filename.  Fetches each successful generated file
+  And lists them within the index.
 
   ## Examples
 
     iex> Floorplan.IndexBuilder.generate
     {:ok, "tmp/sitemap.xml.gz"}
   """
-
-  alias Floorplan.FileList
-  alias Floorplan.Utilities
-
   def generate(filename) do
     completed_urlsets = FileList.fetch(:completed)
     urlset_count      = Dict.size(completed_urlsets)

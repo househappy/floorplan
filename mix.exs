@@ -9,7 +9,8 @@ defmodule Floorplan.Mixfile do
      start_permanent: Mix.env == :prod,
      description: description,
      package: package,
-     deps: deps]
+     deps: deps,
+     docs: [extras: ["README.md", "LICENSE.md"]]]
   end
 
   def description do
@@ -37,7 +38,9 @@ defmodule Floorplan.Mixfile do
   end
 
   defp deps do
-    [{:httpotion, "~> 2.1.0"},
+    [{:earmark, "~> 0.1", only: :dev},
+     {:ex_doc, "~> 0.11", only: :dev},
+     {:httpotion, "~> 2.1.0"},
      {:ibrowse, github: "cmullaparthi/ibrowse", tag: "v4.1.2"},
      {:poison, "~> 1.5"},
      {:postgrex, ">= 0.0.0"},
