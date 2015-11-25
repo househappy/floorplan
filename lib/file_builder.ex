@@ -9,7 +9,7 @@ defmodule Floorplan.FileBuilder do
   alias Floorplan.FileList
   alias Floorplan.Utilities
 
-  def build(url_links, is_last \\ false) do
+  def build(url_links) do
     file_number = FileCounter.increment
     url_count   = Dict.size(url_links)
     filename    = if Application.get_env(:floorplan, :test) do
@@ -28,11 +28,6 @@ defmodule Floorplan.FileBuilder do
       _ ->
         Logger.info "✕ #{filename}  -- #{url_count} urls"
         FileList.push({filename, :failed, url_count})
-    end
-
-    if is_last do
-      index_name = Agent.get(:index_filename, fn filename -> filename end)
-      Floorplan.IndexBuilder.generate(index_name)
     end
 
     if compressed_filename do

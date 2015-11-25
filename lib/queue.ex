@@ -59,7 +59,7 @@ defmodule Floorplan.Queue do
     {:reply, queue, queue}
   end
   def handle_call(:done, _from, queue) do
-    Floorplan.FileBuilder.build(queue, true)
+    build_file(queue, nil)
     {:reply, :ok, []}
   end
 

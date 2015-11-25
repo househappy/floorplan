@@ -99,8 +99,10 @@ defmodule Floorplan.FileList do
   iex> GenServer.cast(FileList, {:replace, "tmp/sitemap1.xml", {"tmp/sitemap1.xml.gz", :completed, 12}})
   """
   def handle_cast({:replace, old_filename, new_state}, old_files) do
-    file_list = Enum.reject(old_files, fn({filename, _, _}) -> filename == old_filename end)
-    {:noreply, [new_state|file_list]}
+    matching_files = Enum.group_by(old_files, fn({filename, _, _}) -> filename == old_filename end)
+    unchanged_files = Dict.get(matching_files, false) || []
+    queue = [new_state|unchanged_files]
+    {:noreply, queue}
   end
 end
 

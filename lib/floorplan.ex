@@ -31,8 +31,6 @@ defmodule Floorplan do
     Path.dirname(index_name) |> ensure_writeable_destination!
     Logger.info "Generating sitemap in destination: '#{Path.dirname(Path.absname(index_name))}'"
 
-    Agent.start_link(fn -> index_name end, name: :index_filename)
-
     start_time = Timex.Time.now
 
     link_sources
@@ -42,6 +40,8 @@ defmodule Floorplan do
     notify_stream_finished
 
     completed?
+
+    Floorplan.IndexBuilder.generate(index_name)
 
     file_list = FileList.fetch(:all)
     execution_time = Timex.Time.diff(Timex.Time.now, start_time) |> Timex.Format.Time.Formatter.format(:humanized)
