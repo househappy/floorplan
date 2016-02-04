@@ -3,52 +3,44 @@ require Logger
 defmodule Floorplan.IndexBuilder do
   @moduledoc false
 
-  alias Floorplan.FileList
   alias Floorplan.Utilities
 
-  @doc """
-  Generate the index given a filename.  Fetches each successful generated file
-  And lists them within the index.
-
-  ## Examples
-
-    iex> Floorplan.IndexBuilder.generate
-    {:ok, "tmp/sitemap.xml.gz"}
-  """
-  def generate(filename) do
-    completed_urlsets = FileList.fetch(:completed)
-    urlset_count      = Dict.size(completed_urlsets)
-    FileList.push({filename, :in_progress, urlset_count})
-
-    case write_urlsets_to_file(filename, completed_urlsets) do
-      {:ok, :ok} ->
-        {:ok, compressed_filename} = Utilities.compress(filename)
-
-        Logger.info "✓ #{compressed_filename}  -- #{urlset_count} urls"
-        FileList.replace(filename, {compressed_filename, :completed, urlset_count})
-      _ ->
-        Logger.error "✕ index failed to generate: #{filename} -- #{urlset_count} urls"
-        FileList.push({filename, :failed, urlset_count})
-    end
+  def generate_index_file(context) do
+    generate_index_file(context, context.sitemap_files)
   end
 
-  def write_urlsets_to_file(filename, urlsets) do
-    File.open(filename, [:write], fn file ->
-      IO.binwrite file, xml_header
+  def generate_index_file(context, sitemap_files) do
+    Logger.info "Generating sitemap index file"
 
-      Enum.map(urlsets, fn {filename, _status, _url_count} ->
-        basename = Path.basename(filename)
-        IO.binwrite file, build_url_entry("/" <> basename)
-        IO.binwrite file, "\n"
-      end)
+    Utilities.ensure_writeable_destination!(context.target_directory)
 
-      IO.binwrite file, xml_footer
-    end)
+    basename = "sitemap.xml.gz"
+    file_path = Path.join(context.target_directory, basename)
+
+    stream = index_file_xml_stream(context.base_url, sitemap_files)
+
+    Utilities.write_compressed(file_path, stream)
+
+    Logger.info "✓ #{basename}  -- #{Enum.count(sitemap_files)} sitemap files"
+
+    :ok
   end
 
-  def build_url_entry(location) do
+  def index_file_xml_stream(base_url, sitemap_files) do
+    [
+      [xml_header],
+      Stream.map(sitemap_files, &(build_index_entry base_url, &1)),
+      [xml_footer]
+    ] |> Stream.concat
+  end
+
+  def build_index_entry(base_url, sitemap_file) do
+    build_url_entry(base_url, "/" <> Utilities.sitemap_file_basename(sitemap_file.index))
+  end
+
+  def build_url_entry(base_url, location) do
     last_mod = Utilities.current_time |> String.split("T") |> List.first
-    loc = Floorplan.config.base_url <> location
+    loc = base_url <> location
     node = [{:loc,       nil, loc},
             {:lastmod,   nil, last_mod}]
     XmlBuilder.generate({:sitemap, nil, node})

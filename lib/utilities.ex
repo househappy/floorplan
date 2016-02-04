@@ -69,19 +69,17 @@ defmodule Floorplan.Utilities do
     end
   end
 
-  @doc """
-  Takes a filename and gzips it, returning the new filename
-  """
-  def compress(filename) do
-    compress(filename, filename <> ".gz")
+  def ensure_writeable_destination!(target_directory) do
+    File.mkdir_p!(target_directory)
   end
-  def compress(filename, compressed_filename) do
-    case File.write!(compressed_filename, :zlib.gzip(File.read!(filename))) do
-      :ok ->
-        File.rm!(filename)
-        {:ok, compressed_filename}
-      _ ->
-        {:error, filename}
-    end
+
+  def write_compressed(path, stream) do
+    File.open!(path, [:write, :compressed], fn(file) ->
+      stream |> Enum.each(&(IO.binwrite(file, &1)))
+    end)
+  end
+
+  def sitemap_file_basename(file_index) do
+    "sitemap#{file_index + 1}.xml.gz"
   end
 end

@@ -5,57 +5,74 @@ defmodule Floorplan.FileBuilder do
   Takes a list of UrlLink structs and writes to file
   """
 
-  alias Floorplan.FileCounter
-  alias Floorplan.FileList
   alias Floorplan.Utilities
 
-  def build(url_links) do
-    file_number = FileCounter.increment
-    url_count   = Dict.size(url_links)
-    filename    = if Application.get_env(:floorplan, :test) do
-      "tmp/test_sitemap#{file_number}.xml"
-    else
-      "tmp/sitemap#{file_number}.xml"
-    end
-    FileList.push({filename, :in_progress, url_count})
-
-    case write_url_links_to_file(filename, url_links) do
-      {:ok, :ok} ->
-        {:ok, compressed_filename} = Utilities.compress(filename)
-
-        Logger.info "✓ #{compressed_filename}  -- #{url_count} urls"
-        FileList.replace(filename, {compressed_filename, :completed, url_count})
-      _ ->
-        Logger.info "✕ #{filename}  -- #{url_count} urls"
-        FileList.push({filename, :failed, url_count})
-    end
-
-    if compressed_filename do
-      {:ok, compressed_filename}
-    else
-      {:error, filename}
-    end
+  defmodule Context do
+    defstruct target_directory: "tmp",
+              urls_per_file: 50_000,
+              base_url: "http://www.example.com",
+              sitemap_files: [], # Set by Generator
+              urls: [
+                %Floorplan.Url{location: "/foo/bar.html"}
+              ]
   end
 
-  defp write_url_links_to_file(filename, url_links) do
-    File.open(filename, [:write], fn file ->
-      IO.binwrite file, xml_header
+  defmodule SitemapFile do
+    defstruct index: 0,
+              url_count: 0,
+              path: nil
+  end
 
-      Enum.map(url_links, fn url_link ->
-        IO.binwrite file, build_node(url_link)
-        IO.binwrite file, "\n"
-      end)
+  def generate do
+    generate(%Context{})
+  end
 
-      IO.binwrite file, xml_footer
+  def generate(context) when is_map(context) do
+    Utilities.ensure_writeable_destination!(context.target_directory)
+    sitemap_files = write_sitemap_files(context)
+    %Context{context | sitemap_files: sitemap_files}
+  end
+
+  def write_sitemap_files(context) do
+    chunks = Stream.chunk(context.urls, context.urls_per_file, context.urls_per_file, [])
+    Logger.info "Reading from datasources..."
+    chunks |> Stream.with_index |> Enum.map(fn({file_urls, index}) ->
+      write_file(context, index, file_urls)
     end)
   end
 
-  def build_node(url_link) do
-    loc = Floorplan.config.base_url <> to_string(url_link.location)
-    node = [{:loc,       nil, loc},
-            {:lastmod,   nil, url_link.last_mod},
+  def write_file(context, file_index, file_urls) do
+    basename = Utilities.sitemap_file_basename(file_index)
+    path = Path.join(context.target_directory, basename)
+
+    Logger.info "Writing file #{path}"
+
+    stream = sitemap_file_xml_stream(context.base_url, file_urls)
+    Utilities.write_compressed(path, stream)
+
+    url_count = Enum.count(file_urls)
+    Logger.info "✓ #{basename}  -- #{url_count} urls"
+
+    %SitemapFile{index: file_index, path: path, url_count: url_count}
+  end
+
+  def sitemap_file_xml_stream(base_url, file_urls) do
+    urls_xml_stream = file_urls
+      |> Stream.map(&(build_node(base_url, &1)))
+
+    [
+      [xml_header],
+      urls_xml_stream,
+      [xml_footer]
+    ] |> Stream.concat
+  end
+
+  def build_node(base_url, url_link) do
+    loc = base_url <> to_string(url_link.location)
+    node = [{:loc,        nil, loc},
+            {:lastmod,    nil, url_link.last_mod},
             {:changefreq, nil, url_link.change_freq},
-            {:priority,  nil, url_link.priority}]
+            {:priority,   nil, url_link.priority}]
     XmlBuilder.generate({:url, nil, node})
   end
 

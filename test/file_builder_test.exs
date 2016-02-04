@@ -11,7 +11,7 @@ defmodule Floorplan.FileBuilderTest do
   test "build_node generates XML comforming to sitemap protocol" do
     valid_xml = """
     <url>
-      <loc>https://www.househappy.org</loc>
+      <loc>http://example.com</loc>
       <lastmod>2004-12-23T18:00:15+00:00</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.8</priority>
@@ -26,7 +26,7 @@ defmodule Floorplan.FileBuilderTest do
     }
 
     # remove whitespace
-    generated_xml = String.replace(FileBuilder.build_node(url_link), ~r/\s/i, "")
+    generated_xml = String.replace(FileBuilder.build_node("http://example.com", url_link), ~r/\s/i, "")
     source_xml    = String.replace(valid_xml, ~r/\s/i, "")
 
     assert generated_xml == source_xml
