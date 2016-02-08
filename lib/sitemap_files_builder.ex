@@ -2,20 +2,27 @@ require Logger
 
 defmodule Floorplan.SitemapFilesBuilder do
   @docmodule """
-  Takes a list of UrlLink structs and writes to file
+  Writes a series of sitemap files for the given Context
+  """
+
+  @doc """
+  See Floorplan.Context for configuring the sitemap generation.
+
+  ## Examples
+
+  Generate sitemap file with a single, empty URL
+
+    mix run -e 'Floorplan.SitemapFilesBuilder.generate'
+    gunzip -c tmp/sitemap1.xml.gz
+
+  Generate sitemap file with a populated URL
+
+    mix run -e 'Floorplan.SitemapFilesBuilder.generate(%{base_url: "http://example.com", urls: [%{location: "/foo.html"}]})'
+    gunzip -c tmp/sitemap1.xml.gz
   """
 
   alias Floorplan.Utilities
-
-  defmodule Context do
-    defstruct target_directory: "tmp",
-              urls_per_file: 50_000,
-              base_url: "http://www.example.com",
-              sitemap_files: [], # Set by Generator
-              urls: [
-                %Floorplan.Url{location: "/foo/bar.html"}
-              ]
-  end
+  alias Floorplan.Context
 
   defmodule SitemapFile do
     defstruct index: 0,
@@ -28,6 +35,7 @@ defmodule Floorplan.SitemapFilesBuilder do
   end
 
   def generate(context) when is_map(context) do
+    context = Map.merge(%Context{}, context)
     Utilities.ensure_writeable_destination!(context.target_directory)
     sitemap_files = write_sitemap_files(context)
     %Context{context | sitemap_files: sitemap_files}
@@ -67,12 +75,13 @@ defmodule Floorplan.SitemapFilesBuilder do
     ] |> Stream.concat
   end
 
-  def build_node(base_url, url_link) do
-    loc = base_url <> to_string(url_link.location)
+  def build_node(base_url, url) do
+    url = Map.merge(%Floorplan.Url{}, url)
+    loc = base_url <> to_string(url.location)
     node = [{:loc,        nil, loc},
-            {:lastmod,    nil, url_link.last_mod},
-            {:changefreq, nil, url_link.change_freq},
-            {:priority,   nil, url_link.priority}]
+            {:lastmod,    nil, url.last_mod},
+            {:changefreq, nil, url.change_freq},
+            {:priority,   nil, url.priority}]
     XmlBuilder.generate({:url, nil, node})
   end
 
