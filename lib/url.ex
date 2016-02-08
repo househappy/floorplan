@@ -4,7 +4,8 @@ defmodule Floorplan.Url do
   @doc """
   Each key:
 
-  `location`: The path part of the URL: e.g. "/foo/bar.html"
+  `location`: The path part of the URL: e.g. "/foo/bar.html". The base part of the
+              URL is specified in %Floorplan.Context{}
   `last_mod`: Last modification datetime, in DateFormat.format("{ISOz}") format
   `change_freq`: one of: ~w(daily weekly monthly yearly)
   `priority`: value from 0.0 (lowest) to 1.0 (highest)
