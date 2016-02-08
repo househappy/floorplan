@@ -60,7 +60,10 @@ defmodule Floorplan.Adapters.Elasticsearch.ScanScrollSearch do
 
       def search_url(scroll_id) do
         # counter for testing/debugging
+        # VCR needs a unique URL to differentiate different requests, but the
+        # Elasticsearch scroll API produces unique results for the same URL.
         scroll_count = Floorplan.ScrollCounter.increment
+
         es_host <> "/_search/scroll?scroll=5m&scroll_id=#{scroll_id}&hh_scroll_count=#{scroll_count}"
       end
     end
