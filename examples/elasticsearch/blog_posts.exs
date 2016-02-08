@@ -34,7 +34,6 @@ end
 
 defmodule SitemapGenerator do
   def generate do
-    Floorplan.generate("tmp/sitemap.xml", BlogPostSource.all_as_urls)
+    Floorplan.generate("tmp", "http://example.com", BlogPostSource.all_as_urls)
   end
 end
-

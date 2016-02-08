@@ -7,9 +7,6 @@ defmodule Floorplan.App do
     import Supervisor.Spec
 
     children = [
-      worker(Floorplan.Queue, [[name: Floorplan.Queue]]),
-      worker(Floorplan.FileList, [[name: Floorplan.FileList]]),
-      worker(Floorplan.FileCounter, [[name: Floorplan.FileCounter]]),
       worker(Floorplan.ScrollCounter, [[name: Floorplan.ScrollCounter]])
     ]
 

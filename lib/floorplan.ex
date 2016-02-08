@@ -5,62 +5,53 @@ defmodule Floorplan do
   Primary interface for generating a sitemap
   """
 
-  alias Floorplan.FileList
-  alias Floorplan.Queue
-
-  @config %{
-    base_url: Application.get_env(:floorplan, :base_url),
-    queue_size: Application.get_env(:floorplan, :queue_size) || 49_900
-  }
-  def config, do: @config
-
   @doc """
   takes the target location for the sitemap index and a collection of
-  `link_sources`. `link_sources` can be either a stream or enum.
+  `urls`. `urls` can be either a stream or enum.
 
   ## Examples
-    iex> link_source = [ %Floorplan.UrlLink{} ]
-    ...>Floorplan.generate("/tmp/sitemap.xml", link_source)
-      Generated sitemap to destination: '/tmp'
-      ✓ tmp/sitemap.xml.gz  -- 1 urls
-      ✓ tmp/sitemap1.xml.gz  -- 1 urls
-      Elapsed time: 10.533 milliseconds
-    {:ok, [{"/tmp/sitemap.xml.gz", :completed}, {"/tmp/sitemap1.xml.gz", :completed}]}
+
+    iex(1)> Floorplan.generate("tmp", "http://example.com", [%{location: "/foo.html"}])
+
+    11:38:01.527 [info]  Generating sitemap in destination: 'tmp'
+
+    11:38:01.530 [info]  Reading from datasources...
+
+    11:38:01.531 [info]  Writing file tmp/sitemap1.xml.gz
+
+    11:38:01.534 [info]  ✓ sitemap1.xml.gz  -- 1 urls
+
+    11:38:01.535 [info]  Generating sitemap index file
+
+    11:38:01.675 [info]  ✓ sitemap.xml.gz  -- 1 sitemap files
+
+    11:38:01.680 [info]  Elapsed time: 146.374 milliseconds
+    {:ok,
+     %Floorplan.Context{base_url: "http://example.com",
+      sitemap_files: [%Floorplan.SitemapFilesBuilder.SitemapFile{index: 0,
+        path: "tmp/sitemap1.xml.gz", url_count: 1}], target_directory: "tmp",
+      urls: [%{location: "/foo.html"}], urls_per_file: 50000}}
   """
-  def generate(index_name, link_sources) do
-    Path.dirname(index_name) |> ensure_writeable_destination!
-    Logger.info "Generating sitemap in destination: '#{Path.dirname(Path.absname(index_name))}'"
+  def generate(target_directory, base_url, urls) do
+    context = %Floorplan.Context{
+      target_directory: target_directory,
+      base_url: base_url,
+      urls: urls
+    }
+    generate(context)
+  end
+
+  def generate(context) do
+    Logger.info "Generating sitemap in destination: '#{context.target_directory}'"
 
     start_time = Timex.Time.now
 
-    link_sources
-    |> Stream.map(&Queue.push/1)
-    |> Stream.run
+    context = Floorplan.SitemapFilesBuilder.generate(context)
+    :ok = Floorplan.IndexBuilder.generate_index_file(context)
 
-    notify_stream_finished
-
-    completed?
-
-    Floorplan.IndexBuilder.generate(index_name)
-
-    file_list = FileList.fetch(:all)
     execution_time = Timex.Time.diff(Timex.Time.now, start_time) |> Timex.Format.Time.Formatter.format(:humanized)
     Logger.info "Elapsed time: #{execution_time}"
 
-    {:ok, file_list}
-  end
-
-  @doc """
-  Notify the queue the stream is finished and should be dumped to file before
-  max queue size has been reached.
-  """
-  def notify_stream_finished, do: Queue.done
-
-  def ensure_writeable_destination!(index_name) do
-    File.mkdir_p!(index_name)
-  end
-
-  def completed? do
-    if FileList.done?, do: true, else: completed?
+    {:ok, context}
   end
 end

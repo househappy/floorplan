@@ -29,6 +29,6 @@ end
 
 defmodule SitemapGenerator do
   def generate do
-    Floorplan.generate("tmp/sitemap.xml", MarketplaceSource.all_as_urls)
+    Floorplan.generate("tmp", "http://example.com", MarketplaceSource.all_as_urls)
   end
 end
