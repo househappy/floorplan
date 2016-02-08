@@ -1,7 +1,7 @@
-defmodule Floorplan.FileBuilderTest do
+defmodule Floorplan.SitemapFilesBuilderTest do
   use ExUnit.Case
 
-  alias Floorplan.FileBuilder
+  alias Floorplan.SitemapFilesBuilder
 
   setup do
     Logger.remove_backend(:console)
@@ -26,7 +26,7 @@ defmodule Floorplan.FileBuilderTest do
     }
 
     # remove whitespace
-    generated_xml = String.replace(FileBuilder.build_node("http://example.com", url_link), ~r/\s/i, "")
+    generated_xml = String.replace(SitemapFilesBuilder.build_node("http://example.com", url_link), ~r/\s/i, "")
     source_xml    = String.replace(valid_xml, ~r/\s/i, "")
 
     assert generated_xml == source_xml

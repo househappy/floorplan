@@ -1,6 +1,6 @@
 require Logger
 
-defmodule Floorplan.FileBuilder do
+defmodule Floorplan.SitemapFilesBuilder do
   @docmodule """
   Takes a list of UrlLink structs and writes to file
   """
@@ -47,7 +47,7 @@ defmodule Floorplan.FileBuilder do
 
     Logger.info "Writing file #{path}"
 
-    stream = sitemap_file_xml_stream(context.base_url, file_urls)
+    stream = xml_stream(context.base_url, file_urls)
     Utilities.write_compressed(path, stream)
 
     url_count = Enum.count(file_urls)
@@ -56,7 +56,7 @@ defmodule Floorplan.FileBuilder do
     %SitemapFile{index: file_index, path: path, url_count: url_count}
   end
 
-  def sitemap_file_xml_stream(base_url, file_urls) do
+  def xml_stream(base_url, file_urls) do
     urls_xml_stream = file_urls
       |> Stream.map(&(build_node(base_url, &1)))
 

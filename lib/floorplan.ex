@@ -19,7 +19,7 @@ defmodule Floorplan do
     {:ok, [{"/tmp/sitemap.xml.gz", :completed}, {"/tmp/sitemap1.xml.gz", :completed}]}
   """
   def generate(target_directory, base_url, urls) do
-    context = %Floorplan.FileBuilder.Context{
+    context = %Floorplan.SitemapFilesBuilder.Context{
       target_directory: target_directory,
       base_url: base_url,
       urls: urls
@@ -32,7 +32,7 @@ defmodule Floorplan do
 
     start_time = Timex.Time.now
 
-    context = Floorplan.FileBuilder.generate(context)
+    context = Floorplan.SitemapFilesBuilder.generate(context)
     :ok = Floorplan.IndexBuilder.generate_index_file(context)
 
     execution_time = Timex.Time.diff(Timex.Time.now, start_time) |> Timex.Format.Time.Formatter.format(:humanized)

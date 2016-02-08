@@ -17,7 +17,7 @@ defmodule Floorplan.IndexBuilder do
     basename = "sitemap.xml.gz"
     file_path = Path.join(context.target_directory, basename)
 
-    stream = index_file_xml_stream(context.base_url, sitemap_files)
+    stream = xml_stream(context.base_url, sitemap_files)
 
     Utilities.write_compressed(file_path, stream)
 
@@ -26,7 +26,7 @@ defmodule Floorplan.IndexBuilder do
     :ok
   end
 
-  def index_file_xml_stream(base_url, sitemap_files) do
+  def xml_stream(base_url, sitemap_files) do
     [
       [xml_header],
       Stream.map(sitemap_files, &(build_index_entry base_url, &1)),
