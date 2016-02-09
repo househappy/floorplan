@@ -71,11 +71,16 @@ Example 1: From iex
 Example 2: Integrated with application
 
     defmodule MySitemapGenerator do
-      def generate(index_name) do
-        Floorplan.generate(index_name, data_sources)
+      def generate do
+        context = %Floorplan.Context{
+          urls: urls,
+          base_url: "http://example.com",
+          target_directory: "tmp/sitemaps"
+        }
+        Floorplan.generate(context)
       end
 
-      def data_sources do
+      def urls do
         [
           CoreLinks.all,
           ContentLinks.all
@@ -83,10 +88,7 @@ Example 2: Integrated with application
       end
     end
 
-    iex> context = %Floorplan.Context{
-
-    }
-    iex> MySitemapGenerator.generate(%{"tmp/sitemap.xml"})
+    iex> MySitemapGenerator.generate
 
 See [Examples](https://github.com/househappy/floorplan/tree/master/examples) for more usage.
 
