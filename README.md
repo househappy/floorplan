@@ -1,5 +1,6 @@
 # Floorplan
 [![Hex.pm Version](http://img.shields.io/hexpm/v/floorplan.svg?style=flat)](https://hex.pm/packages/floorplan)
+[![Build Status](https://travis-ci.org/househappy/floorplan.svg?branch=master)](https://travis-ci.org/househappy/floorplan)
 
 Floorplan is a library for generating sitemaps.  It takes a index name and a stream of URLs to produce your site's sitemap.
 
@@ -36,37 +37,36 @@ If [available in Hex](https://hex.pm/packages/floorplan), the package can be ins
 
 Example 1: From iex
 
-  iex(1)> urls = [%Floorplan.Url{location: "/foo.html", change_freq: "weekly", priority: "0.9"}]
-  [%Floorplan.Url{change_freq: "weekly", last_mod: "2016-02-08T21:21:01.609Z",
-    location: "/foo.html", priority: "0.9"}]
-  iex(2)> context = %Floorplan.Context{urls: urls, base_url: "http://example.com", target_directory: "tmp/sitemaps"}
-  %Floorplan.Context{base_url: "http://example.com", sitemap_files: [],
-   target_directory: "tmp/sitemaps",
-   urls: [%Floorplan.Url{change_freq: "weekly",
-     last_mod: "2016-02-08T21:21:01.609Z", location: "/foo.html",
-     priority: "0.9"}], urls_per_file: 50000}
-  iex(3)> Floorplan.generate(context)
+    iex(1)> urls = [%Floorplan.Url{location: "/foo.html", change_freq: "weekly", priority: "0.9"}]
+    [%Floorplan.Url{change_freq: "weekly", last_mod: "2016-02-08T21:21:01.609Z",
+      location: "/foo.html", priority: "0.9"}]
+    iex(2)> context = %Floorplan.Context{urls: urls, base_url: "http://example.com", target_directory: "tmp/sitemaps"}
+    %Floorplan.Context{base_url: "http://example.com", sitemap_files: [],
+     target_directory: "tmp/sitemaps",
+     urls: [%Floorplan.Url{change_freq: "weekly",
+       last_mod: "2016-02-08T21:21:01.609Z", location: "/foo.html",
+       priority: "0.9"}], urls_per_file: 50000}
+    iex(3)> Floorplan.generate(context)
 
-  13:30:50.117 [info]  Generating sitemap in destination: 'tmp/sitemaps'
+    13:30:50.117 [info]  Generating sitemap in destination: 'tmp/sitemaps'
 
-  13:30:50.118 [info]  Reading from datasources...
+    13:30:50.118 [info]  Reading from datasources...
 
-  13:30:50.118 [info]  Writing file tmp/sitemaps/sitemap1.xml.gz
+    13:30:50.118 [info]  Writing file tmp/sitemaps/sitemap1.xml.gz
 
-  13:30:50.119 [info]  ✓ sitemap1.xml.gz  -- 1 urls
+    13:30:50.119 [info]  ✓ sitemap1.xml.gz  -- 1 urls
 
-  13:30:50.119 [info]  Generating sitemap index file
+    13:30:50.119 [info]  Generating sitemap index file
 
-  13:30:50.120 [info]  ✓ sitemap.xml.gz  -- 1 sitemap files
-  {:ok,
-   %Floorplan.Context{base_url: "http://example.com",
-    sitemap_files: [%Floorplan.SitemapFilesBuilder.SitemapFile{index: 0,
-      path: "tmp/sitemaps/sitemap1.xml.gz", url_count: 1}],
-    target_directory: "tmp/sitemaps",
-    urls: [%Floorplan.Url{change_freq: "weekly",
-      last_mod: "2016-02-08T21:21:01.609Z", location: "/foo.html",
-      priority: "0.9"}], urls_per_file: 50000}}
-
+    13:30:50.120 [info]  ✓ sitemap.xml.gz  -- 1 sitemap files
+    {:ok,
+     %Floorplan.Context{base_url: "http://example.com",
+      sitemap_files: [%Floorplan.SitemapFilesBuilder.SitemapFile{index: 0,
+        path: "tmp/sitemaps/sitemap1.xml.gz", url_count: 1}],
+      target_directory: "tmp/sitemaps",
+      urls: [%Floorplan.Url{change_freq: "weekly",
+        last_mod: "2016-02-08T21:21:01.609Z", location: "/foo.html",
+        priority: "0.9"}], urls_per_file: 50000}}
 
 Example 2: Integrated with application
 
