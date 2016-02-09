@@ -19,7 +19,7 @@ defmodule Floorplan.Mixfile do
 
   def package do
     [
-      maintainers: ["Lucas Charles"],
+      maintainers: ["Lucas Charles", "Moxley Stratton"],
       licenses: ["BSD Revised"],
       links: %{"GitHub" => "https://github.com/househappy/floorplan"}
     ]
