@@ -12,7 +12,7 @@ If [available in Hex](https://hex.pm/packages/floorplan), the package can be ins
   1. Add floorplan to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:floorplan, "~> 0.1.0"}]
+          [{:floorplan, "~> 0.1.1"}]
         end
 
   2. Ensure floorplan is started before your application:
