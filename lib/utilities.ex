@@ -9,14 +9,16 @@ defmodule Floorplan.Utilities do
   Helper for returning current time as a string
   """
   def current_time do
-    Date.local |> format_time |> elem(1)
+    Date.local
   end
 
   @doc """
   Format a time to a string, for the URL last_mod
   """
+  def format_time, do: format_time(current_time)
   def format_time(time) do
-    DateFormat.format(time, "{ISOz}")
+    {:ok, formatted} = DateFormat.format(time, "{ISOz}")
+    formatted
   end
 
   @doc """

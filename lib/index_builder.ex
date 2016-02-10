@@ -39,7 +39,7 @@ defmodule Floorplan.IndexBuilder do
   end
 
   def build_url_entry(base_url, location) do
-    last_mod = Utilities.current_time |> String.split("T") |> List.first
+    last_mod = Utilities.format_time |> String.split("T") |> List.first
     loc = base_url <> location
     node = [{:loc,       nil, loc},
             {:lastmod,   nil, last_mod}]

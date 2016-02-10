@@ -12,7 +12,7 @@ defmodule Floorplan.Url do
   """
 
   defstruct location: "", # /foo/bar.html
-            last_mod: Floorplan.Utilities.current_time,
+            last_mod: Floorplan.Utilities.format_time,
             change_freq: "daily",
             priority: "0.5"
 end

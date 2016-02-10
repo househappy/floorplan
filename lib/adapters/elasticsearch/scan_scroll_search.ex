@@ -7,6 +7,7 @@ defmodule Floorplan.Adapters.Elasticsearch.ScanScrollSearch do
   ## caller must implement functions:
     - all()
     - build_uri()
+    - last_mod()
     - @change_freq
     - @priority
   """
@@ -25,7 +26,8 @@ defmodule Floorplan.Adapters.Elasticsearch.ScanScrollSearch do
           %Floorplan.Url{
             location: build_uri(hit["_source"]),
             change_freq: @change_freq,
-            priority: @priority
+            priority: @priority,
+            last_mod: last_mod(hit["_source"])
           }
         end)
       end
